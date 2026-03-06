@@ -179,6 +179,20 @@ p {
     overflow: hidden;
 }
 
+.hero .container {
+    max-width: 1680px;
+    padding: 0 58px;
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 144px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
 .logo-header {
     text-align: left;
     margin-bottom: 3rem;
@@ -188,7 +202,7 @@ p {
 }
 
 .main-logo {
-    max-width: 200px;
+    max-width: 260px;
     height: auto;
     filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
     transition: transform 0.3s ease;
@@ -236,15 +250,6 @@ p {
     text-align: left;
     margin-bottom: 2rem;
     animation: slideInUp 0.8s ease-out 0.2s both;
-}
-
-.hero-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: center;
-    position: relative;
-    z-index: 2;
 }
 
 .hero-text {
@@ -461,6 +466,14 @@ p {
     margin-top: 4rem;
 }
 
+.cta-subtext {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
 /* Section 2: Solution and Benefits */
 .solution {
     padding: 100px 0;
@@ -670,6 +683,151 @@ p {
     margin-bottom: 2rem;
     font-weight: 600;
     font-size: 1.125rem;
+}
+
+/* Implementation Block */
+.implementation {
+    padding: 100px 0;
+    background: linear-gradient(180deg, var(--bg-light) 0%, var(--bg-white) 100%);
+    position: relative;
+    z-index: 1;
+}
+
+.implementation-subheadline {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: var(--primary-color) !important;
+}
+
+.implementation-text {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    text-align: center;
+}
+
+.implementation-list {
+    list-style: none;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    padding: 0;
+}
+
+.implementation-list li {
+    padding: 0.75rem 0;
+    padding-left: 2rem;
+    position: relative;
+    color: var(--text-light);
+    font-size: 1.125rem;
+}
+
+.implementation-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.implementation-objective {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.migration-highlight {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border-radius: 24px;
+    padding: 3rem;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-xl);
+}
+
+.migration-highlight h3 {
+    color: white;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.migration-highlight p {
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 1rem;
+}
+
+.migration-highlight ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.migration-highlight ul li {
+    padding: 0.5rem 0;
+    padding-left: 2rem;
+    position: relative;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.migration-highlight ul li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+.migration-cta-text {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    margin-top: 2rem !important;
+}
+
+/* Final CTA Block (Bloco 06) */
+.final-cta-block {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #7320ce 0%, #8b3de8 50%, #00d5e0 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.final-cta-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+}
+
+.final-cta-title {
+    font-size: 3rem !important;
+    font-weight: 800 !important;
+    color: white !important;
+    text-align: center !important;
+    line-height: 1.2 !important;
+    max-width: 900px;
+    margin: 0 auto 3rem !important;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.testimonials-intro {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+}
+
+.testimonial-implementation {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(115, 32, 206, 0.1);
 }
 
 /* Differentiators */
@@ -997,6 +1155,10 @@ html {
         min-height: auto;
     }
 
+    .hero .container {
+        padding: 0 29px;
+    }
+
     .hero-content {
         grid-template-columns: 1fr;
         gap: 40px;
@@ -1040,12 +1202,16 @@ html {
         font-size: 1.25rem;
     }
 
+    .final-cta-title {
+        font-size: 2.25rem !important;
+    }
+
     .bg-shape {
         opacity: 0.05;
     }
 
     .main-logo {
-        max-width: 180px;
+        max-width: 230px;
     }
 
     .footer-logo-img {
@@ -1058,17 +1224,34 @@ html {
         padding: 0 16px;
     }
 
+    .hero .container {
+        padding: 0 16px;
+    }
+
     .hero {
         padding: 40px 0;
     }
 
     .solution,
     .features,
+    .implementation,
     .testimonials,
     .differentiators,
     .faq,
     .final-cta {
         padding: 60px 0;
+    }
+
+    .final-cta-block {
+        padding: 60px 0;
+    }
+
+    .final-cta-title {
+        font-size: 2rem !important;
+    }
+
+    .migration-highlight {
+        padding: 2rem 1.5rem;
     }
 
     .cta-button {
@@ -1085,7 +1268,7 @@ html {
     }
 
     .main-logo {
-        max-width: 150px;
+        max-width: 200px;
     }
 
     .footer-logo-img {

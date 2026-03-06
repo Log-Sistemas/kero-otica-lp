@@ -26,7 +26,7 @@ if (contactForm) {
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             store: document.getElementById('store').value,
-            message: document.getElementById('message').value
+            instagram: document.getElementById('instagram') ? document.getElementById('instagram').value : ''
         };
 
         // Validate form
@@ -57,8 +57,24 @@ function validateForm(data) {
         return false;
     }
 
+    if (hasEmailTypo(data.email)) {
+        showFormMessage('Verifique se o e-mail está correto. Possível erro de digitação detectado.', 'error');
+        return false;
+    }
+
     if (!data.phone.trim()) {
         showFormMessage('Por favor, preencha seu telefone.', 'error');
+        return false;
+    }
+
+    const phoneValidation = validatePhone(data.phone);
+    if (!phoneValidation.valid) {
+        showFormMessage(phoneValidation.message, 'error');
+        return false;
+    }
+
+    if (data.instagram !== undefined && !data.instagram.trim()) {
+        showFormMessage('Por favor, preencha seu Instagram ou nome da ótica.', 'error');
         return false;
     }
 
@@ -69,6 +85,33 @@ function validateForm(data) {
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+}
+
+// Email typo detection (common misspellings of popular domains)
+function hasEmailTypo(email) {
+    const commonTypos = {
+        'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gmal.com': 'gmail.com',
+        'gmail.con': 'gmail.com', 'gmail.cmo': 'gmail.com', 'gmail.co': 'gmail.com',
+        'hotmial.com': 'hotmail.com', 'hotmal.com': 'hotmail.com', 'hotmeil.com': 'hotmail.com',
+        'outlok.com': 'outlook.com', 'outloo.com': 'outlook.com', 'outlook.con': 'outlook.com',
+        'yahoo.con': 'yahoo.com', 'yaho.com': 'yahoo.com', 'yahoo.cmo': 'yahoo.com'
+    };
+    const domain = (email.split('@')[1] || '').toLowerCase();
+    return domain in commonTypos;
+}
+
+// Phone validation (Brazilian format: 10-11 digits)
+function validatePhone(phone) {
+    const digitsOnly = phone.replace(/\D/g, '');
+    if (digitsOnly.length < 10 || digitsOnly.length > 11) {
+        return { valid: false, message: 'Por favor, insira um telefone válido com 10 ou 11 dígitos.' };
+    }
+    // Basic check: Brazilian phones start with valid area code
+    const validAreaCodes = /^[1-9][1-9]/;
+    if (!validAreaCodes.test(digitsOnly)) {
+        return { valid: false, message: 'Por favor, insira um número de telefone válido.' };
+    }
+    return { valid: true };
 }
 
 // Show form message
@@ -122,7 +165,7 @@ const observer = new IntersectionObserver((entries) => {
 
 // Observe elements for animation
 document.addEventListener('DOMContentLoaded', () => {
-    const animatedElements = document.querySelectorAll('.benefit-card, .testimonial-card, .differentiator-item, .faq-item');
+    const animatedElements = document.querySelectorAll('.benefit-card, .testimonial-card, .differentiator-item, .faq-item, .migration-highlight');
     animatedElements.forEach(el => {
         observer.observe(el);
     });
