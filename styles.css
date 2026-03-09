@@ -207,6 +207,9 @@ p {
     filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
     transition: transform 0.3s ease;
     display: block;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 12px 20px;
 }
 
 .main-logo:hover {
