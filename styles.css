@@ -9,8 +9,9 @@
     --primary-color: #7320ce;
     --primary-dark: #5a19a3;
     --primary-light: #8b3de8;
-    --secondary-color: #00d5e0;
-    --secondary-dark: #00a8b0;
+    /* RGB normalizado r:0,028 g:0,824 b:0,877 → #07D2E0 */
+    --secondary-color: #07d2e0;
+    --secondary-dark: #0599a8;
     --accent-color: #f59e0b;
     --text-dark: #0f172a;
     --text-light: #475569;
@@ -103,7 +104,7 @@ body {
     height: 100%;
     background-image: 
         radial-gradient(circle at 20% 50%, rgba(115, 32, 206, 0.15) 1px, transparent 1px),
-        radial-gradient(circle at 80% 80%, rgba(0, 213, 224, 0.15) 1px, transparent 1px),
+        radial-gradient(circle at 80% 80%, rgba(7, 210, 224, 0.15) 1px, transparent 1px),
         radial-gradient(circle at 40% 20%, rgba(115, 32, 206, 0.1) 1px, transparent 1px);
     background-size: 50px 50px, 80px 80px, 60px 60px;
     animation: particlesMove 30s linear infinite;
@@ -169,7 +170,7 @@ p {
 
 /* Section 1: Hero - Bold and Dynamic */
 .hero {
-    background: linear-gradient(135deg, #7320ce 0%, #8b3de8 50%, #00d5e0 100%);
+    background: linear-gradient(135deg, #7320ce 0%, #8b3de8 50%, var(--secondary-color) 100%);
     color: white;
     padding: 100px 0;
     min-height: 700px;
@@ -440,16 +441,18 @@ p {
     height: 300px;
 }
 
+/* Ciano do degradê — rgb(0.028, 0.824, 0.877) → #07D2E0 */
 .cta-primary {
-    background-color: white;
-    color: var(--primary-color);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+    color: #0f172a;
+    box-shadow: 0 10px 30px rgba(7, 210, 224, 0.35);
 }
 
 .cta-primary:hover {
-    background-color: var(--bg-light);
+    background: linear-gradient(135deg, #3de8f2, var(--secondary-color));
+    color: #0f172a;
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 15px 40px rgba(7, 210, 224, 0.45);
 }
 
 .cta-secondary {
@@ -520,7 +523,7 @@ p {
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(90deg, #7320ce, #00d5e0);
+    background: linear-gradient(90deg, #7320ce, var(--secondary-color));
     transform: scaleX(0);
     transition: transform 0.4s ease;
 }
@@ -594,11 +597,11 @@ p {
 .feature-item:hover {
     transform: translateX(10px);
     box-shadow: var(--shadow-lg);
-    border-left-color: #00d5e0;
+    border-left-color: var(--secondary-color);
 }
 
 .feature-check {
-    color: #00d5e0;
+    color: var(--secondary-color);
     font-size: 1.75rem;
     font-weight: bold;
     flex-shrink: 0;
@@ -792,7 +795,7 @@ p {
 /* Final CTA Block (Bloco 06) */
 .final-cta-block {
     padding: 100px 0;
-    background: linear-gradient(135deg, #7320ce 0%, #8b3de8 50%, #00d5e0 100%);
+    background: linear-gradient(135deg, #7320ce 0%, #8b3de8 50%, var(--secondary-color) 100%);
     color: white;
     position: relative;
     overflow: hidden;
@@ -953,7 +956,7 @@ p {
 /* Final CTA */
 .final-cta {
     padding: 100px 0;
-    background: linear-gradient(135deg, #7320ce 0%, #8b3de8 50%, #00d5e0 100%);
+    background: linear-gradient(135deg, #7320ce 0%, #8b3de8 50%, var(--secondary-color) 100%);
     color: white;
     position: relative;
     overflow: hidden;
