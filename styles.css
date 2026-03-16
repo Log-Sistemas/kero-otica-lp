@@ -241,19 +241,22 @@ p {
 
 .hero h1 {
     color: white;
-    font-size: 4rem;
-    margin-bottom: 1.5rem;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    animation: slideInUp 0.8s ease-out;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: slideInUpBold 0.8s ease-out;
+    line-height: 1;
 }
 
 .hero h2 {
     color: rgba(255, 255, 255, 0.95);
-    font-size: 1.75rem;
-    font-weight: 500;
+    font-size: 1.5rem;
+    font-weight: 600;
     text-align: left;
-    margin-bottom: 2rem;
-    animation: slideInUp 0.8s ease-out 0.2s both;
+    margin-bottom: 2.5rem;
+    animation: slideInUpBold 0.8s ease-out 0.2s both;
+    text-transform: none;
+    letter-spacing: -0.01em;
 }
 
 .hero-text {
@@ -362,9 +365,9 @@ p {
 }
 
 .features-image-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 3rem;
 }
 
@@ -373,6 +376,8 @@ p {
     overflow: hidden;
     box-shadow: var(--shadow-lg);
     position: relative;
+    max-width: 780px;
+    width: 100%;
 }
 
 .logos-grid {
@@ -404,6 +409,14 @@ p {
     max-height: 80px;
     object-fit: contain;
     display: none;
+}
+
+/* Ensure key images are visible even sem JS */
+.hero-main-image,
+.section-image,
+.feature-image,
+.client-logo {
+    display: block;
 }
 
 /* CTA Buttons - Bold and Modern */
