@@ -1,0 +1,26 @@
+name: Deploy Kero Ótica Landing Page
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Upload Kero Ótica to DreamHost
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: FTP Deploy Kero Ótica
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /home/USUARIO_FTP/DOMINIO_KERO_OTICA.com.br/
+          local-dir: kero_otica_LP/
+          protocol: sftp
+          port: 22
