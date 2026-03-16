@@ -20,7 +20,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /home/USUARIO_FTP/DOMINIO_KERO_OTICA.com.br/
+          server-dir: /home/USUARIO_FTP/DOMINIO_KERO_OTICA/lp-kero-otica
           local-dir: kero_otica_LP/
           protocol: sftp
           port: 22
