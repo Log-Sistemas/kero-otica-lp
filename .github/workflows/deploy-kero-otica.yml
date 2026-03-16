@@ -22,4 +22,4 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           source: "kero_otica_LP/*"
-          target: "/home/deploy_LPs/kero-otica.com/lp-kero-otica"
+          target: "/home/deploy_LPs/kero-otica.com/lp-kero-otica" 
