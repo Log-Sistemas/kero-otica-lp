@@ -23,7 +23,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor: Element) => {
 });
 
 // Form submission handler
-const contactForm = document.getElementById('contactForm') as HTMLFormElement;
+const contactForm = document.getElementById('ko-form') as HTMLFormElement;
 
 if (contactForm) {
     contactForm.addEventListener('submit', (e: Event) => {
@@ -34,7 +34,8 @@ if (contactForm) {
             email: (document.getElementById('email') as HTMLInputElement).value,
             phone: (document.getElementById('phone') as HTMLInputElement).value,
             store: (document.getElementById('store') as HTMLInputElement).value,
-            message: (document.getElementById('message') as HTMLTextAreaElement).value
+            // Esta landing não tem um campo textarea #message no HTML, então precisamos proteger contra null.
+            message: (document.getElementById('message') as HTMLTextAreaElement | null)?.value || ''
         };
 
         // Validate form
@@ -46,7 +47,9 @@ if (contactForm) {
         showFormMessage('Obrigado! Entraremos em contato em breve.', 'success');
         
         // Reset form
-        contactForm.reset();
+        setTimeout(() => {
+            contactForm.reset();
+        }, 500);
         
         // In a real application, you would send the data to a server here
         console.log('Form data:', formData);
@@ -103,7 +106,7 @@ function showFormMessage(message: string, type: 'success' | 'error'): void {
     `;
 
     // Insert message after form
-    const form = document.getElementById('contactForm');
+    const form = document.getElementById('ko-form');
     if (form && form.parentNode) {
         form.parentNode.insertBefore(messageElement, form.nextSibling);
     }

@@ -10,8 +10,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-58P427HH');</script>
+    <!-- End Google Tag Manager -->
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-58P427HH"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <!-- Animated Background Elements -->
     <div class="animated-bg">
         <div class="bg-shape bg-shape-1"></div>
@@ -340,7 +352,7 @@
     <section class="final-cta" id="contato">
         <div class="container">
             <div class="contact-form">
-                <form id="contactForm">
+                <form id="ko-form">
                     <div class="form-group">
                         <input type="text" id="name" name="name" placeholder="Seu nome *" required>
                     </div>
@@ -356,6 +368,14 @@
                     <div class="form-group">
                         <input type="text" id="instagram" name="instagram" placeholder="Qual o seu Instagram / ótica? *" required>
                     </div>
+                    
+                    <!-- UTM tracking fields -->
+                    <input type="hidden" name="utm_source">
+                    <input type="hidden" name="utm_medium">
+                    <input type="hidden" name="utm_campaign">
+                    <input type="hidden" name="utm_content">
+                    <input type="hidden" name="utm_term">
+                    
                     <button type="submit" class="cta-button cta-primary">SOLICITAR DEMONSTRAÇÃO</button>
                 </form>
             </div>
@@ -373,6 +393,74 @@
         </div>
     </footer>
 
+    <!-- UTM tracking (propagate UTMs + fill hidden form fields) -->
+    <script>
+        // Obtém a URL atual
+        var currentUrl = window.location.href;
+        // Usa a API de URL do JavaScript para ler os parâmetros da URL
+        var url = new URL(currentUrl);
+        // Obtém o slug (path) da URL atual, removendo barras iniciais e finais
+        var pagePath = url.pathname.replace(/^\/|\/$/g, '');
+        // Remove o prefixo "https://" ou "http://" do referrer, se existir
+        var cleanReferrer = document.referrer ? document.referrer.replace(/^https?:\/\//, '') : '';
+
+        // Define valores padrão para UTM caso eles não estejam presentes
+        var utmSource = url.searchParams.get('utm_source') || cleanReferrer || 'Direto';
+        var utmMedium = url.searchParams.get('utm_medium') || 'Organico';
+        var utmCampaign = url.searchParams.get('utm_campaign') || 'Direto';
+        var utmContent = url.searchParams.get('utm_content') || pagePath || 'Home';
+        var utmTerm = url.searchParams.get('utm_term') || '';
+
+        function setHiddenInput(name, value) {
+            var el = document.querySelector('input[type="hidden"][name="' + name + '"]');
+            if (el) el.value = value;
+        }
+
+        // Preenche os inputs hidden dentro do form (se existirem)
+        setHiddenInput('utm_source', utmSource);
+        setHiddenInput('utm_medium', utmMedium);
+        setHiddenInput('utm_campaign', utmCampaign);
+        setHiddenInput('utm_content', utmContent);
+        setHiddenInput('utm_term', utmTerm);
+
+        // Percorre todos os links da página
+        var links = document.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+            // Verifica se o link atual não contém um atributo de popup
+            if (!links[i].hasAttribute('popup')) {
+                // Obtém a URL de destino do link atual se não abrir um popup
+                var destinationUrl = links[i].href;
+                // Verifica se a URL de destino não é um link âncora para a mesma página
+                if (!destinationUrl.includes('#')) {
+                    // Verifica se a URL de destino já possui algum parâmetro UTM
+                    var hasUtmParams = destinationUrl.includes('utm_source') ||
+                        destinationUrl.includes('utm_medium') ||
+                        destinationUrl.includes('utm_campaign') ||
+                        destinationUrl.includes('utm_content') ||
+                        destinationUrl.includes('utm_term');
+                    // Se não houver parâmetros UTM, adicione-os
+                    if (!hasUtmParams) {
+                        destinationUrl += (destinationUrl.indexOf('?') === -1 ? '?' : '&');
+                        destinationUrl += 'utm_source=' + utmSource;
+                        destinationUrl += '&utm_medium=' + utmMedium;
+                        destinationUrl += '&utm_campaign=' + utmCampaign;
+                        destinationUrl += '&utm_content=' + utmContent;
+                        destinationUrl += '&utm_term=' + utmTerm;
+
+                        // Verifica se a URL de destino contém "pay.hotmart" ou "pay.kiwify"
+                        if (destinationUrl.includes('pay.hotmart') || destinationUrl.includes('pay.kiwify')) {
+                            // Adiciona o parâmetro "sck" à URL de destino concatenando todos os parâmetros UTM
+                            var sckValue = utmSource + '-' + utmMedium + '-' + utmCampaign + '-' + utmContent + '-' + utmTerm;
+                            destinationUrl += '&sck=' + sckValue;
+                        }
+
+                        // Atribui a URL de destino ao link atual
+                        links[i].href = destinationUrl;
+                    }
+                }
+            }
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
