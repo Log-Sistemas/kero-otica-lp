@@ -24,10 +24,13 @@ jobs:
           token = os.environ.get("LAHAR_TOKEN", "").strip()
           if not token:
               raise SystemExit("LAHAR_TOKEN secret is not set")
-          path = Path("kero_otica_LP/script.js")
+          candidates = [Path("kero_otica_LP/script.js"), Path("script.js")]
+          path = next((p for p in candidates if p.is_file()), None)
+          if path is None:
+              raise SystemExit("script.js not found; tried: " + ", ".join(str(p) for p in candidates))
           text = path.read_text(encoding="utf-8")
           if "__LAHAR_TOKEN__" not in text:
-              raise SystemExit("Placeholder __LAHAR_TOKEN__ not found in kero_otica_LP/script.js")
+              raise SystemExit(f"Placeholder __LAHAR_TOKEN__ not found in {path}")
           path.write_text(text.replace("__LAHAR_TOKEN__", token), encoding="utf-8")
           PY
 
