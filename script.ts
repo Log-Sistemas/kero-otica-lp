@@ -1,11 +1,76 @@
 // Form handling and interactive features for Kero Ótica landing page
 
-interface FormData {
+/** Injected at deploy time via GitHub Actions (replace __LAHAR_TOKEN__) */
+const LAHAR_TOKEN = '__LAHAR_TOKEN__';
+const LAHAR_NOME_FORMULARIO = 'kero_otica_lp';
+const LAHAR_CONVERSIONS_URL = 'https://app.lahar.com.br/api/conversions';
+
+interface KeroFormFields {
     name: string;
     email: string;
     phone: string;
     store: string;
+    instagram: string;
     message: string;
+}
+
+function getUtmTags(): string {
+    const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
+    const parts: string[] = [];
+    keys.forEach((key) => {
+        const el = document.querySelector(`input[type="hidden"][name="${key}"]`) as HTMLInputElement | null;
+        const v = el?.value?.trim();
+        if (v) parts.push(`${key}=${v}`);
+    });
+    return parts.join(',');
+}
+
+function buildAnotacoes(message: string, instagram: string): string {
+    const msg = message.trim();
+    const ig = instagram.trim();
+    if (msg && ig) return `${msg}\n\nInstagram: ${ig}`;
+    if (ig) return `Instagram: ${ig}`;
+    return msg;
+}
+
+async function sendLaharConversion(data: KeroFormFields): Promise<boolean> {
+    const params = new URLSearchParams();
+    params.set('token_api_lahar', LAHAR_TOKEN);
+    params.set('nome_formulario', LAHAR_NOME_FORMULARIO);
+    params.set('tipo_integracao', 'conversions');
+    params.set('estagio_lead', '1');
+    params.set('url_origem', window.location.href);
+    params.set('email_contato', data.email.trim());
+    params.set('nome_contato', data.name.trim());
+    params.set('tel_celular', data.phone.trim());
+    if (data.store.trim()) {
+        params.set('name_empresa', data.store.trim());
+    }
+    const anotacoes = buildAnotacoes(data.message, data.instagram);
+    if (anotacoes) {
+        params.set('anotacoes', anotacoes);
+    }
+    const tags = getUtmTags();
+    if (tags) {
+        params.set('tags', tags);
+    }
+
+    const res = await fetch(LAHAR_CONVERSIONS_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+    });
+
+    const text = await res.text();
+    let json: { status?: string } = {};
+    try {
+        json = JSON.parse(text) as { status?: string };
+    } catch {
+        return false;
+    }
+    return json.status === 'sucesso';
 }
 
 // Smooth scroll for anchor links
@@ -28,36 +93,50 @@ const contactForm = document.getElementById('ko-form') as HTMLFormElement;
 if (contactForm) {
     contactForm.addEventListener('submit', (e: Event) => {
         e.preventDefault();
-        
-        const formData: FormData = {
-            name: (document.getElementById('name') as HTMLInputElement).value,
-            email: (document.getElementById('email') as HTMLInputElement).value,
-            phone: (document.getElementById('phone') as HTMLInputElement).value,
-            store: (document.getElementById('store') as HTMLInputElement).value,
-            // Esta landing não tem um campo textarea #message no HTML, então precisamos proteger contra null.
-            message: (document.getElementById('message') as HTMLTextAreaElement | null)?.value || ''
-        };
+        void (async () => {
+            const formData: KeroFormFields = {
+                name: (document.getElementById('name') as HTMLInputElement).value,
+                email: (document.getElementById('email') as HTMLInputElement).value,
+                phone: (document.getElementById('phone') as HTMLInputElement).value,
+                store: (document.getElementById('store') as HTMLInputElement).value,
+                instagram: (document.getElementById('instagram') as HTMLInputElement).value,
+                message: (document.getElementById('message') as HTMLTextAreaElement | null)?.value || ''
+            };
 
-        // Validate form
-        if (!validateForm(formData)) {
-            return;
-        }
+            if (!validateForm(formData)) {
+                return;
+            }
 
-        // Show success message
-        showFormMessage('Obrigado! Entraremos em contato em breve.', 'success');
-        
-        // Reset form
-        setTimeout(() => {
-            contactForm.reset();
-        }, 500);
-        
-        // In a real application, you would send the data to a server here
-        console.log('Form data:', formData);
+            const submitBtn = contactForm.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+            if (submitBtn) submitBtn.disabled = true;
+
+            try {
+                const ok = await sendLaharConversion(formData);
+                if (ok) {
+                    showFormMessage('Obrigado! Entraremos em contato em breve.', 'success');
+                    setTimeout(() => {
+                        contactForm.reset();
+                    }, 500);
+                } else {
+                    showFormMessage(
+                        'Não foi possível enviar agora. Tente novamente em instantes ou entre em contato por outro canal.',
+                        'error'
+                    );
+                }
+            } catch {
+                showFormMessage(
+                    'Erro de conexão. Verifique sua internet e tente novamente.',
+                    'error'
+                );
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        })();
     });
 }
 
 // Form validation
-function validateForm(data: FormData): boolean {
+function validateForm(data: KeroFormFields): boolean {
     if (!data.name.trim()) {
         showFormMessage('Por favor, preencha seu nome.', 'error');
         return false;
@@ -70,6 +149,11 @@ function validateForm(data: FormData): boolean {
 
     if (!data.phone.trim()) {
         showFormMessage('Por favor, preencha seu telefone.', 'error');
+        return false;
+    }
+
+    if (!data.instagram.trim()) {
+        showFormMessage('Por favor, preencha seu Instagram ou nome da ótica.', 'error');
         return false;
     }
 
@@ -147,15 +231,16 @@ function handleImageDisplay(): void {
     const images = document.querySelectorAll('img');
     images.forEach((img: HTMLImageElement) => {
         if (img.src && img.src !== window.location.href) {
-            img.onload = function() {
-                this.style.display = 'block';
-                const placeholder = document.getElementById(this.id.replace('Image', 'ImagePlaceholder').replace('Logo', 'LogoPlaceholder'));
+            img.onload = () => {
+                img.style.display = 'block';
+                const placeholderId = (img.id || '').replace('Image', 'ImagePlaceholder').replace('Logo', 'LogoPlaceholder');
+                const placeholder = placeholderId ? document.getElementById(placeholderId) : null;
                 if (placeholder) {
                     (placeholder as HTMLElement).style.display = 'none';
                 }
             };
-            img.onerror = function() {
-                this.style.display = 'none';
+            img.onerror = () => {
+                img.style.display = 'none';
             };
         } else {
             img.style.display = 'none';
@@ -178,7 +263,7 @@ faqQuestions.forEach((question: Element) => {
                 item.classList.remove('faq-open');
                 const itemAnswer = item.querySelector('.faq-answer') as HTMLElement;
                 if (itemAnswer) {
-                    itemAnswer.style.maxHeight = null;
+                    itemAnswer.style.maxHeight = '';
                 }
             });
             

@@ -1,5 +1,69 @@
 // Form handling and interactive features for Kero Ótica landing page
 
+/** Injected at deploy time via GitHub Actions (replace __LAHAR_TOKEN__) */
+var LAHAR_TOKEN = '__LAHAR_TOKEN__';
+var LAHAR_NOME_FORMULARIO = 'kero_otica_lp';
+var LAHAR_CONVERSIONS_URL = 'https://app.lahar.com.br/api/conversions';
+
+function getUtmTags() {
+    var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+    var parts = [];
+    keys.forEach(function (key) {
+        var el = document.querySelector('input[type="hidden"][name="' + key + '"]');
+        var v = el && el.value ? el.value.trim() : '';
+        if (v) parts.push(key + '=' + v);
+    });
+    return parts.join(',');
+}
+
+function buildAnotacoes(message, instagram) {
+    var msg = (message || '').trim();
+    var ig = (instagram || '').trim();
+    if (msg && ig) return msg + '\n\nInstagram: ' + ig;
+    if (ig) return 'Instagram: ' + ig;
+    return msg;
+}
+
+function sendLaharConversion(data) {
+    var params = new URLSearchParams();
+    params.set('token_api_lahar', LAHAR_TOKEN);
+    params.set('nome_formulario', LAHAR_NOME_FORMULARIO);
+    params.set('tipo_integracao', 'conversions');
+    params.set('estagio_lead', '1');
+    params.set('url_origem', window.location.href);
+    params.set('email_contato', data.email.trim());
+    params.set('nome_contato', data.name.trim());
+    params.set('tel_celular', data.phone.trim());
+    if (data.store.trim()) {
+        params.set('name_empresa', data.store.trim());
+    }
+    var anotacoes = buildAnotacoes(data.message || '', data.instagram);
+    if (anotacoes) {
+        params.set('anotacoes', anotacoes);
+    }
+    var tags = getUtmTags();
+    if (tags) {
+        params.set('tags', tags);
+    }
+
+    return fetch(LAHAR_CONVERSIONS_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+    }).then(function (res) {
+        return res.text();
+    }).then(function (text) {
+        try {
+            var json = JSON.parse(text);
+            return json.status === 'sucesso';
+        } catch (e) {
+            return false;
+        }
+    });
+}
+
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', function (e) {
@@ -18,32 +82,48 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 const contactForm = document.getElementById('ko-form');
 
 if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        
-        const formData = {
+
+        var formData = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             store: document.getElementById('store').value,
-            instagram: document.getElementById('instagram') ? document.getElementById('instagram').value : ''
+            instagram: document.getElementById('instagram') ? document.getElementById('instagram').value : '',
+            message: (document.getElementById('message') && document.getElementById('message').value) || ''
         };
 
-        // Validate form
         if (!validateForm(formData)) {
             return;
         }
 
-        // Show success message
-        showFormMessage('Obrigado! Entraremos em contato em breve.', 'success');
-        
-        // Reset form
-        setTimeout(() => {
-            contactForm.reset();
-        }, 500);
-        
-        // In a real application, you would send the data to a server here
-        console.log('Form data:', formData);
+        var submitBtn = contactForm.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        sendLaharConversion(formData)
+            .then(function (ok) {
+                if (ok) {
+                    showFormMessage('Obrigado! Entraremos em contato em breve.', 'success');
+                    setTimeout(function () {
+                        contactForm.reset();
+                    }, 500);
+                } else {
+                    showFormMessage(
+                        'Não foi possível enviar agora. Tente novamente em instantes ou entre em contato por outro canal.',
+                        'error'
+                    );
+                }
+            })
+            .catch(function () {
+                showFormMessage(
+                    'Erro de conexão. Verifique sua internet e tente novamente.',
+                    'error'
+                );
+            })
+            .finally(function () {
+                if (submitBtn) submitBtn.disabled = false;
+            });
     });
 }
 

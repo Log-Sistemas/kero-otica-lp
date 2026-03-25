@@ -14,6 +14,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Inject LAHAR token into script.js
+        env:
+          LAHAR_TOKEN: ${{ secrets.LAHAR_TOKEN }}
+        run: |
+          python3 << 'PY'
+          import os
+          from pathlib import Path
+          token = os.environ.get("LAHAR_TOKEN", "").strip()
+          if not token:
+              raise SystemExit("LAHAR_TOKEN secret is not set")
+          path = Path("kero_otica_LP/script.js")
+          text = path.read_text(encoding="utf-8")
+          if "__LAHAR_TOKEN__" not in text:
+              raise SystemExit("Placeholder __LAHAR_TOKEN__ not found in kero_otica_LP/script.js")
+          path.write_text(text.replace("__LAHAR_TOKEN__", token), encoding="utf-8")
+          PY
+
       - name: Deploy Kero Ótica via SSH
         uses: appleboy/scp-action@v0.1.7
         with:
