@@ -4,6 +4,20 @@
 const LAHAR_TOKEN = '__LAHAR_TOKEN__';
 const LAHAR_NOME_FORMULARIO = 'kero_otica_lp';
 const LAHAR_CONVERSIONS_URL = 'https://app.lahar.com.br/api/conversions';
+const LAHAR_IFRAME_NAME = 'lahar-conversions-iframe';
+
+function ensureLaharIframe(): HTMLIFrameElement {
+    let el = document.getElementById('lahar-conversions-iframe') as HTMLIFrameElement | null;
+    if (el) return el;
+    el = document.createElement('iframe');
+    el.id = 'lahar-conversions-iframe';
+    el.name = LAHAR_IFRAME_NAME;
+    el.title = 'LAHAR';
+    el.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+    return el;
+}
 
 interface KeroFormFields {
     name: string;
@@ -55,22 +69,23 @@ async function sendLaharConversion(data: KeroFormFields): Promise<boolean> {
         params.set('tags', tags);
     }
 
-    const res = await fetch(LAHAR_CONVERSIONS_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params.toString()
+    ensureLaharIframe();
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = LAHAR_CONVERSIONS_URL;
+    form.target = LAHAR_IFRAME_NAME;
+    form.style.display = 'none';
+    params.forEach((value, key) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
     });
-
-    const text = await res.text();
-    let json: { status?: string } = {};
-    try {
-        json = JSON.parse(text) as { status?: string };
-    } catch {
-        return false;
-    }
-    return json.status === 'sucesso';
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
+    return true;
 }
 
 // Smooth scroll for anchor links
